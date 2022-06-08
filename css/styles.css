@@ -1,0 +1,46 @@
+body {
+  font-family: "open sans", sans-serif;
+}
+
+.dark-green-background {
+  background-color: #4b8673;
+}
+
+.white-text {
+  color: white;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.align-items {
+  align-items: center;
+}
+
+.bar-container {
+  border-radius: 10px;
+  border: white solid 1px;
+  padding: 0.5rem;
+}
+
+.height-90 {
+  height: 90%;
+}
+
+.height-10 {
+  height: 10%;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.dropdown-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+}
