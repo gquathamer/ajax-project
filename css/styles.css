@@ -14,6 +14,10 @@ body {
   justify-content: space-between;
 }
 
+.justify-end {
+  justify-content: end;
+}
+
 .align-items {
   align-items: center;
 }
@@ -43,4 +47,70 @@ body {
   left: 0;
   right: 0;
   background-color: white;
+  display: none;
+}
+
+.roboto-font {
+  font-family: roboto, "open sans", sans-serif;
+}
+
+.gray-background {
+  background-color: #b6b6b6;
+}
+
+.bottom-border {
+  border-bottom: 1px solid black;
+}
+
+.column-wrap {
+  flex-direction: column;
+  padding: 0;
+}
+
+.column-one-tenth {
+  flex-basis: 10%;
+}
+
+.column-eight-tenth {
+  flex-basis: 80%;
+}
+
+form {
+  padding: 2rem 1rem;
+}
+
+label {
+  font-family: roboto, "open sans", sans-serif;
+}
+
+input {
+  background-color: #b6b6b6;
+  border-radius: 10px;
+  border-color: white;
+  padding: 5px;
+  font-family: roboto, "open sans", sans-serif;
+  width: 65%;
+}
+
+button {
+  background-color: #5fd068;
+  border-radius: 10px;
+  font-family: roboto, "open sans", sans-serif;
+  width: 15%;
+}
+
+.bottom-margin {
+  margin-bottom: 2rem;
+}
+
+.padding-0 {
+  padding: 0;
+}
+
+#geocode-form {
+  display: none;
+}
+
+#reverse-geocode-form {
+  display: none;
 }
