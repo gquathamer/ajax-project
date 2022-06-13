@@ -1,12 +1,15 @@
 .container {
   max-width: 992px;
   margin: 0 auto;
+  display: flex;
+  outline: solid black;
 }
 
 html,
 body,
 #map {
   height: 100%;
+  width: 100%;
 }
 
 .row {
@@ -62,6 +65,12 @@ body,
   }
 
   .dropdown-container-desktop {
+    flex-basis: 33.5%;
     display: block;
+  }
+
+  #map {
+    height: 100%;
+    flex-basis: 66.5%;
   }
 }
