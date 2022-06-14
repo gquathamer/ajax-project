@@ -2,17 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>AJAX Project</title>
   <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/0a10146f16.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
 </head>
 <body>
-  <header>
+  <header class="container row dark-green-background justify-between align-items height-10">
+    <h1 class="white-text">Travel App</h1>
+    <div class="bar-container">
+      <i class="fa-solid fa-bars fa-2xl white-text"></i>
+    </div>
   </header>
-  <main>
+  <main class="container height-90 position-relative">
+    <div class="dropdown-container-desktop row column-wrap column-third">
+      <div id="reverse-geocode-menu-desktop"
+        class="row justify-between gray-background align-items bottom-border column-one-tenth">
+        <h1 class="roboto-font">Reverse Geocode</h1>
+        <i class="fa-solid fa-angle-down fa-xl"></i>
+      </div>
+      <form action="" class="column-eight-tenth" id="reverse-geocode-form-desktop">
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="address">Latitude:</label>
+          <input required name="latitude" type="text" id="latitude-desktop" placeholder="Type An Address">
+        </div>
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="address">Longitude:</label>
+          <input required name="longitude" type="text" id="longitude-desktop" placeholder="Type An Address">
+        </div>
+        <div class="form-actions row justify-end padding-0">
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+    <form action="" class="column-eight-tenth" id="geocode-map-form">
+      <div class="row justify-end padding-0">
+        <input required name="address" type="text" id="geocode-map-form-input" placeholder="Type An Address">
+      </div>
+    </form>
+    <div id="map">
+    </div>
+    <div class="dropdown-container row column-wrap column">
+      <div id="geocode-menu" class="row justify-between gray-background align-items bottom-border column-one-tenth">
+        <h1 class="roboto-font">Geocode</h1>
+        <i class="fa-solid fa-angle-down fa-xl"></i>
+      </div>
+      <form action="" class="column-eight-tenth" id="geocode-form">
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="address">Address:</label>
+          <input required name="address" type="text" id="geocode-address" placeholder="Type An Address">
+        </div>
+        <div class="form-actions row justify-end padding-0">
+          <button type="submit">Send</button>
+        </div>
+      </form>
+      <div id="reverse-geocode-menu" class="row justify-between gray-background align-items bottom-border column-one-tenth">
+        <h1 class="roboto-font">Reverse Geocode</h1>
+        <i class="fa-solid fa-angle-down fa-xl"></i>
+      </div>
+      <form action="" class="column-eight-tenth" id="reverse-geocode-form">
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="address">Latitude:</label>
+          <input required name="address" type="text" id="latitude" placeholder="Type An Address">
+        </div>
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="address">Longitude:</label>
+          <input required name="address" type="text" id="longitude" placeholder="Type An Address">
+        </div>
+        <div class="form-actions row justify-end padding-0">
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
   </main>
   <script src="js/data.js"></script>
   <script src="js/main.js"></script>

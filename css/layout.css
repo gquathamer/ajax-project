@@ -1,0 +1,76 @@
+.container {
+  max-width: 992px;
+  margin: 0 auto;
+  display: flex;
+  outline: solid black;
+}
+
+html,
+body,
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  padding: 0 1rem;
+}
+
+.column-third,
+.column-three-quarter,
+.column-full {
+  flex-basis: 100%;
+}
+
+.justify-center {
+  justify-content: start;
+}
+
+#geocode-map-form {
+  display: none;
+}
+
+.dropdown-container-desktop {
+  display: none;
+}
+
+@media screen and (min-width: 576px) {
+  .column-third {
+    flex-basis: calc(100% / 3);
+  }
+
+  .column-half {
+    flex-basis: calc(100% / 2);
+  }
+
+  .column-three-quarter {
+    flex-basis: calc(100% / 9);
+  }
+
+  .column-full {
+    flex-basis: 100%;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  #geocode-map-form {
+    display: block;
+  }
+
+  .bar-container {
+    display: none;
+  }
+
+  .dropdown-container-desktop {
+    flex-basis: 33.5%;
+    display: block;
+  }
+
+  #map {
+    height: 100%;
+    flex-basis: 66.5%;
+  }
+}

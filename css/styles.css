@@ -1,0 +1,155 @@
+body {
+  font-family: "open sans", sans-serif;
+}
+
+.dark-green-background {
+  background-color: #4b8673;
+}
+
+.white-text {
+  color: white;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-end {
+  justify-content: end;
+}
+
+.align-items {
+  align-items: center;
+}
+
+.bar-container {
+  border-radius: 10px;
+  border: white solid 1px;
+  padding: 0.5rem;
+}
+
+.height-90 {
+  height: 90%;
+}
+
+.height-10 {
+  height: 10%;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.dropdown-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  display: none;
+}
+
+.roboto-font {
+  font-family: roboto, "open sans", sans-serif;
+}
+
+.gray-background {
+  background-color: #b6b6b6;
+}
+
+.bottom-border {
+  border-bottom: 1px solid black;
+}
+
+.column-wrap {
+  flex-direction: column;
+  padding: 0;
+}
+
+.column-one-tenth {
+  flex-basis: 10%;
+}
+
+.column-eight-tenth {
+  flex-basis: 80%;
+}
+
+form {
+  padding: 2rem 1rem;
+}
+
+label {
+  font-family: roboto, "open sans", sans-serif;
+}
+
+input {
+  background-color: #b6b6b6;
+  border-radius: 10px;
+  border-color: white;
+  padding: 5px;
+  font-family: roboto, "open sans", sans-serif;
+  width: 65%;
+}
+
+button {
+  background-color: #5fd068;
+  border-radius: 10px;
+  font-family: roboto, "open sans", sans-serif;
+  width: 15%;
+}
+
+.bottom-margin {
+  margin-bottom: 2rem;
+}
+
+.padding-0 {
+  padding: 0;
+}
+
+#geocode-form {
+  display: none;
+}
+
+#reverse-geocode-form {
+  display: none;
+}
+
+.popup-div {
+  margin: 0;
+  padding: 0;
+}
+
+.button-div {
+  display: flex;
+  justify-content: space-around;
+}
+
+.popup-button {
+  background-color: #5fd068;
+  border-radius: 10px;
+  font-family:
+    roboto,
+    "open sans",
+    sans-serif;
+  width: 40%;
+}
+
+#geocode-map-form {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 401;
+  width: 40%;
+}
+
+#geocode-map-form input {
+  background-color: white;
+  border-radius: 10px;
+  padding: 5px;
+  font-family:
+    roboto,
+    "open sans",
+    sans-serif;
+  width: 100%;
+}
