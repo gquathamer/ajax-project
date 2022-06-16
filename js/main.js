@@ -24,6 +24,10 @@ var geocodeForm = document.forms[2];
 
 var reverseGeocodeForm = document.forms[3];
 
+map.addEventListener('click', function (event) {
+  getReverseGeocode(event);
+});
+
 $barContainer.addEventListener('click', function () {
   if ($map.style.display !== 'none') {
     $map.style.display = 'none';
@@ -142,9 +146,12 @@ function getReverseGeocode(event) {
   if (event.target.id === 'reverse-geocode-form-desktop') {
     submittedLatLng.push(reverseGeocodeDesktopForm.elements.latitude.value);
     submittedLatLng.push(reverseGeocodeDesktopForm.elements.longitude.value);
-  } else {
+  } else if (event.target.id === 'reverse-geocode-form') {
     submittedLatLng.push(reverseGeocodeForm.elements.latitude.value);
     submittedLatLng.push(reverseGeocodeForm.elements.longitude.value);
+  } else {
+    submittedLatLng.push(event.latlng.lat);
+    submittedLatLng.push(event.latlng.lng);
   }
   var xhr = new XMLHttpRequest();
   xhr.open(
@@ -166,7 +173,7 @@ function getReverseGeocode(event) {
     xhrElevation.addEventListener('load', function () {
       var elevation = xhrElevation.response;
       markupLayer.bindPopup(createPopupContent(geojsonFeature, elevation));
-      if (event.target.id !== 'reverse-geocode-form-desktop') {
+      if (event.target.id !== 'reverse-geocode-form-desktop' && undefined) {
         if ($map.style.display === 'none') {
           $map.style.display = 'block';
           $dropdownContainer.style.display = 'none';
