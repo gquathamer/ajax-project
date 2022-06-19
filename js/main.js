@@ -30,6 +30,10 @@ var $getDirectionsMenu = document.querySelector('#directions-menu');
 
 var $getDirectionsForm = document.querySelector('#directions-form');
 
+var $getDirectionsMenuDesktop = document.querySelector('#directions-menu-desktop');
+
+var $getDirectionsFormDesktop = document.querySelector('#directions-form-desktop');
+
 map.addEventListener('click', function (event) {
   getReverseGeocode(event);
 });
@@ -205,18 +209,23 @@ function getReverseGeocode(event) {
 }
 
 function getBestRoute(event, geojsonFeature) {
-  if ($map.style.display !== 'none') {
-    $map.style.display = 'none';
-    $dropdownContainer.style.display = 'block';
+  if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
+    $getDirectionsMenuDesktop.style.display = 'flex';
+    $getDirectionsFormDesktop.style.display = 'block';
   } else {
-    $map.style.display = 'block';
-    $dropdownContainer.style.display = 'none';
-  }
-  if ($getDirectionsMenu.style.display !== 'flex') {
-    $getDirectionsMenu.style.display = 'flex';
-  }
-  if ($getDirectionsForm.style.display !== 'flex') {
-    $getDirectionsForm.style.display = 'block';
+    if ($map.style.display !== 'none') {
+      $map.style.display = 'none';
+      $dropdownContainer.style.display = 'block';
+    } else {
+      $map.style.display = 'block';
+      $dropdownContainer.style.display = 'none';
+    }
+    if ($getDirectionsMenu.style.display !== 'flex') {
+      $getDirectionsMenu.style.display = 'flex';
+    }
+    if ($getDirectionsForm.style.display !== 'flex') {
+      $getDirectionsForm.style.display = 'block';
+    }
   }
 }
 

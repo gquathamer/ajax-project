@@ -115,6 +115,10 @@ button {
   display: none;
 }
 
+#reverse-geocode-form-desktop {
+  display: none;
+}
+
 .popup-div {
   margin: 0;
   padding: 0;
@@ -159,6 +163,14 @@ button {
 }
 
 #directions-form {
+  display: none;
+}
+
+#directions-menu-desktop {
+  display: none;
+}
+
+#directions-form-desktop {
   display: none;
 }
 
