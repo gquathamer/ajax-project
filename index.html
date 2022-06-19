@@ -85,6 +85,23 @@
           <button type="submit">Send</button>
         </div>
       </form>
+      <div id="directions-menu" class="row justify-between gray-background align-items bottom-border column-one-tenth">
+        <h1 class="roboto-font">Get Best Route</h1>
+        <i class="fa-solid fa-angle-down fa-xl"></i>
+      </div>
+      <form action="" class="column-eight-tenth" id="directions-form">
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="destination">Destination:</label>
+          <input required name="destination" type="text" id="destination" placeholder="Type An Address">
+        </div>
+        <div class="row justify-between bottom-margin padding-0">
+          <label for="buffer">Buffer:</label>
+          <input required name="buffer" type="text" id="buffer" placeholder="i.e. 100 ft">
+        </div>
+        <div class="form-actions row justify-end padding-0">
+          <button type="submit" class="directions-button">Get Directions</button>
+        </div>
+      </form>
     </div>
   </main>
   <script src="js/data.js"></script>

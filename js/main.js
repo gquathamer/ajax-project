@@ -24,6 +24,12 @@ var geocodeForm = document.forms[2];
 
 var reverseGeocodeForm = document.forms[3];
 
+var directionsButtonOnThePopup;
+
+var $getDirectionsMenu = document.querySelector('#directions-menu');
+
+var $getDirectionsForm = document.querySelector('#directions-form');
+
 map.addEventListener('click', function (event) {
   getReverseGeocode(event);
 });
@@ -89,7 +95,7 @@ function createPopupContent(geojsonFeature, elevation) {
   directionsButton.textContent = 'Directions';
   buttonDiv.appendChild(directionsButton);
   var poiButton = document.createElement('button');
-  poiButton.setAttribute('id', 'poi-div');
+  poiButton.setAttribute('id', 'poi-button');
   poiButton.setAttribute('class', 'popup-button');
   poiButton.textContent = 'POI';
   buttonDiv.appendChild(poiButton);
@@ -134,6 +140,10 @@ function getGeocode(event) {
         }
       }
       markupLayer.openPopup();
+      directionsButtonOnThePopup = document.querySelector('#directions-button');
+      directionsButtonOnThePopup.addEventListener('click', function (event) {
+        getBestRoute(event, geojsonFeature);
+      });
       map.setView(markupLayer.getLayers()[0]._latlng, 13);
     });
     xhrElevation.send();
@@ -183,11 +193,31 @@ function getReverseGeocode(event) {
         }
       }
       markupLayer.openPopup();
+      directionsButtonOnThePopup = document.querySelector('#directions-button');
+      directionsButtonOnThePopup.addEventListener('click', function (event) {
+        getBestRoute(event, geojsonFeature);
+      });
       map.setView(markupLayer.getLayers()[0]._latlng, 13);
     });
     xhrElevation.send();
   });
   xhr.send();
+}
+
+function getBestRoute(event, geojsonFeature) {
+  if ($map.style.display !== 'none') {
+    $map.style.display = 'none';
+    $dropdownContainer.style.display = 'block';
+  } else {
+    $map.style.display = 'block';
+    $dropdownContainer.style.display = 'none';
+  }
+  if ($getDirectionsMenu.style.display !== 'flex') {
+    $getDirectionsMenu.style.display = 'flex';
+  }
+  if ($getDirectionsForm.style.display !== 'flex') {
+    $getDirectionsForm.style.display = 'block';
+  }
 }
 
 geocodeForm.addEventListener('submit', function (event) {

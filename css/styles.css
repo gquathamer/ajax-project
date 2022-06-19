@@ -96,7 +96,7 @@ button {
   background-color: #5fd068;
   border-radius: 10px;
   font-family: roboto, "open sans", sans-serif;
-  width: 15%;
+  padding: 0.25rem;
 }
 
 .bottom-margin {
@@ -152,4 +152,21 @@ button {
     "open sans",
     sans-serif;
   width: 100%;
+}
+
+#directions-menu {
+  display: none;
+}
+
+#directions-form {
+  display: none;
+}
+
+.directions-button {
+  background-color: #5fd068;
+  border-radius: 10px;
+  font-family:
+    roboto,
+    "open sans",
+    sans-serif;
 }
