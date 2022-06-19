@@ -17,12 +17,16 @@ var $dropdownContainer = document.querySelector('.dropdown-container');
 var $dropdownContainerDesktop = document.querySelector('.dropdown-container-desktop');
 
 var reverseGeocodeDesktopForm = document.forms[0];
+// eslint-disable-next-line no-unused-vars
+var $directionsFormDesktop = document.forms[1];
 
-var geocodeDesktopForm = document.forms[1];
+var geocodeDesktopForm = document.forms[2];
 
-var geocodeForm = document.forms[2];
+var geocodeForm = document.forms[3];
 
-var reverseGeocodeForm = document.forms[3];
+var reverseGeocodeForm = document.forms[4];
+// eslint-disable-next-line no-unused-vars
+var $directionsForm = document.forms[5];
 
 var directionsButtonOnThePopup;
 
@@ -63,6 +67,12 @@ $dropdownContainer.addEventListener('click', function (event) {
       reverseGeocodeForm.style.display = 'block';
       geocodeForm.style.display = 'none';
     }
+  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu') {
+    if (window.getComputedStyle($getDirectionsForm).display === 'block') {
+      $getDirectionsForm.style.display = 'none';
+    } else {
+      $getDirectionsForm.style.display = 'block';
+    }
   }
 });
 
@@ -72,6 +82,12 @@ $dropdownContainerDesktop.addEventListener('click', function (event) {
       reverseGeocodeDesktopForm.style.display = 'none';
     } else {
       reverseGeocodeDesktopForm.style.display = 'block';
+    }
+  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
+    if (window.getComputedStyle($getDirectionsFormDesktop).display === 'block') {
+      $getDirectionsFormDesktop.style.display = 'none';
+    } else {
+      $getDirectionsFormDesktop.style.display = 'block';
     }
   }
 });
@@ -227,6 +243,7 @@ function getBestRoute(event, geojsonFeature) {
       $getDirectionsForm.style.display = 'block';
     }
   }
+  document.querySelector('#start').textContent = geojsonFeature;
 }
 
 geocodeForm.addEventListener('submit', function (event) {
