@@ -45,43 +45,63 @@ function toggleFormContainer() {
 
 $dropdownContainer.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'geocode-menu') {
-    if ($geocodeForm.style.display === 'block') {
-      $geocodeForm.style.display = 'none';
-    } else {
-      $geocodeForm.style.display = 'block';
-      $reverseGeocodeForm.style.display = 'none';
-    }
+    toggleGeocodeMenu();
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu') {
-    if ($reverseGeocodeForm.style.display === 'block') {
-      $reverseGeocodeForm.style.display = 'none';
-    } else {
-      $reverseGeocodeForm.style.display = 'block';
-      $geocodeForm.style.display = 'none';
-    }
+    toggleReverseGeocodeMenu();
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu') {
-    if (window.getComputedStyle($getDirectionsForm).display === 'block') {
-      $getDirectionsForm.style.display = 'none';
-    } else {
-      $getDirectionsForm.style.display = 'block';
-    }
+    toggleDirectionsMenu();
   }
 });
 
+function toggleGeocodeMenu() {
+  if (window.getComputedStyle($geocodeForm).display === 'block') {
+    $geocodeForm.style.display = 'none';
+  } else {
+    $geocodeForm.style.display = 'block';
+    $reverseGeocodeForm.style.display = 'none';
+  }
+}
+
+function toggleReverseGeocodeMenu() {
+  if (window.getComputedStyle($reverseGeocodeForm).display === 'block') {
+    $reverseGeocodeForm.style.display = 'none';
+  } else {
+    $reverseGeocodeForm.style.display = 'block';
+    $geocodeForm.style.display = 'none';
+  }
+}
+
+function toggleDirectionsMenu() {
+  if (window.getComputedStyle($getDirectionsForm).display === 'block') {
+    $getDirectionsForm.style.display = 'none';
+  } else {
+    $getDirectionsForm.style.display = 'block';
+  }
+}
+
 $dropdownContainerDesktop.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
-    if ($reverseGeocodeDesktopForm.style.display === 'block') {
-      $reverseGeocodeDesktopForm.style.display = 'none';
-    } else {
-      $reverseGeocodeDesktopForm.style.display = 'block';
-    }
+    toggleReverseGeocodeMenuDesktop();
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
-    if (window.getComputedStyle($getDirectionsFormDesktop).display === 'block') {
-      $getDirectionsFormDesktop.style.display = 'none';
-    } else {
-      $getDirectionsFormDesktop.style.display = 'block';
-    }
+    toggleDirectionsMenuDesktop();
   }
 });
+
+function toggleReverseGeocodeMenuDesktop() {
+  if (window.getComputedStyle($reverseGeocodeDesktopForm).display === 'block') {
+    $reverseGeocodeDesktopForm.style.display = 'none';
+  } else {
+    $reverseGeocodeDesktopForm.style.display = 'block';
+  }
+}
+
+function toggleDirectionsMenuDesktop() {
+  if (window.getComputedStyle($getDirectionsFormDesktop).display === 'block') {
+    $getDirectionsFormDesktop.style.display = 'none';
+  } else {
+    $getDirectionsFormDesktop.style.display = 'block';
+  }
+}
 
 function createPopupContent(geojsonFeature, elevation) {
   var popupDiv = document.createElement('div');
