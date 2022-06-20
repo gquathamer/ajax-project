@@ -1,41 +1,28 @@
 // eslint-disable-next-line no-undef
-const map = L.map('map').setView([33.694975, -117.743969], 13);
+var map = L.map('map').setView([33.694975, -117.743969], 13);
 // eslint-disable-next-line no-undef
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 // eslint-disable-next-line no-undef
-const markupLayer = L.geoJSON().addTo(map);
-
+var markupLayer = L.geoJSON().addTo(map);
 var $barContainer = document.querySelector('.bar-container');
-
 var $map = document.querySelector('#map');
-
 var $dropdownContainer = document.querySelector('.dropdown-container');
-
 var $dropdownContainerDesktop = document.querySelector('.dropdown-container-desktop');
-
-var reverseGeocodeDesktopForm = document.forms[0];
+var $reverseGeocodeDesktopForm = document.forms[0];
 // eslint-disable-next-line no-unused-vars
 var $directionsFormDesktop = document.forms[1];
-
-var geocodeDesktopForm = document.forms[2];
-
-var geocodeForm = document.forms[3];
-
-var reverseGeocodeForm = document.forms[4];
+var $geocodeDesktopForm = document.forms[2];
+var $geocodeForm = document.forms[3];
+var $reverseGeocodeForm = document.forms[4];
 // eslint-disable-next-line no-unused-vars
 var $directionsForm = document.forms[5];
-
-var directionsButtonOnThePopup;
-
+var $directionsButtonOnThePopup;
 var $getDirectionsMenu = document.querySelector('#directions-menu');
-
 var $getDirectionsForm = document.querySelector('#directions-form');
-
 var $getDirectionsMenuDesktop = document.querySelector('#directions-menu-desktop');
-
 var $getDirectionsFormDesktop = document.querySelector('#directions-form-desktop');
 
 map.addEventListener('click', function (event) {
@@ -43,29 +30,33 @@ map.addEventListener('click', function (event) {
 });
 
 $barContainer.addEventListener('click', function () {
-  if ($map.style.display !== 'none') {
+  toggleFormContainer();
+});
+
+function toggleFormContainer() {
+  if (window.getComputedStyle($map).display === 'block') {
     $map.style.display = 'none';
     $dropdownContainer.style.display = 'block';
   } else {
     $map.style.display = 'block';
     $dropdownContainer.style.display = 'none';
   }
-});
+}
 
 $dropdownContainer.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'geocode-menu') {
-    if (geocodeForm.style.display === 'block') {
-      geocodeForm.style.display = 'none';
+    if ($geocodeForm.style.display === 'block') {
+      $geocodeForm.style.display = 'none';
     } else {
-      geocodeForm.style.display = 'block';
-      reverseGeocodeForm.style.display = 'none';
+      $geocodeForm.style.display = 'block';
+      $reverseGeocodeForm.style.display = 'none';
     }
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu') {
-    if (reverseGeocodeForm.style.display === 'block') {
-      reverseGeocodeForm.style.display = 'none';
+    if ($reverseGeocodeForm.style.display === 'block') {
+      $reverseGeocodeForm.style.display = 'none';
     } else {
-      reverseGeocodeForm.style.display = 'block';
-      geocodeForm.style.display = 'none';
+      $reverseGeocodeForm.style.display = 'block';
+      $geocodeForm.style.display = 'none';
     }
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu') {
     if (window.getComputedStyle($getDirectionsForm).display === 'block') {
@@ -78,10 +69,10 @@ $dropdownContainer.addEventListener('click', function (event) {
 
 $dropdownContainerDesktop.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
-    if (reverseGeocodeDesktopForm.style.display === 'block') {
-      reverseGeocodeDesktopForm.style.display = 'none';
+    if ($reverseGeocodeDesktopForm.style.display === 'block') {
+      $reverseGeocodeDesktopForm.style.display = 'none';
     } else {
-      reverseGeocodeDesktopForm.style.display = 'block';
+      $reverseGeocodeDesktopForm.style.display = 'block';
     }
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
     if (window.getComputedStyle($getDirectionsFormDesktop).display === 'block') {
@@ -126,9 +117,9 @@ function createPopupContent(geojsonFeature, elevation) {
 function getGeocode(event) {
   var submittedAddress;
   if (event.target.id === 'geocode-map-form') {
-    submittedAddress = geocodeDesktopForm.elements.address.value;
+    submittedAddress = $geocodeDesktopForm.elements.address.value;
   } else {
-    submittedAddress = geocodeForm.elements.address.value;
+    submittedAddress = $geocodeForm.elements.address.value;
   }
   var xhr = new XMLHttpRequest();
   xhr.open(
@@ -160,8 +151,8 @@ function getGeocode(event) {
         }
       }
       markupLayer.openPopup();
-      directionsButtonOnThePopup = document.querySelector('#directions-button');
-      directionsButtonOnThePopup.addEventListener('click', function (event) {
+      $directionsButtonOnThePopup = document.querySelector('#directions-button');
+      $directionsButtonOnThePopup.addEventListener('click', function (event) {
         getBestRoute(event, geojsonFeature);
       });
       map.setView(markupLayer.getLayers()[0]._latlng, 13);
@@ -174,11 +165,11 @@ function getGeocode(event) {
 function getReverseGeocode(event) {
   var submittedLatLng = [];
   if (event.target.id === 'reverse-geocode-form-desktop') {
-    submittedLatLng.push(reverseGeocodeDesktopForm.elements.latitude.value);
-    submittedLatLng.push(reverseGeocodeDesktopForm.elements.longitude.value);
+    submittedLatLng.push($reverseGeocodeDesktopForm.elements.latitude.value);
+    submittedLatLng.push($reverseGeocodeDesktopForm.elements.longitude.value);
   } else if (event.target.id === 'reverse-geocode-form') {
-    submittedLatLng.push(reverseGeocodeForm.elements.latitude.value);
-    submittedLatLng.push(reverseGeocodeForm.elements.longitude.value);
+    submittedLatLng.push($reverseGeocodeForm.elements.latitude.value);
+    submittedLatLng.push($reverseGeocodeForm.elements.longitude.value);
   } else {
     submittedLatLng.push(event.latlng.lat);
     submittedLatLng.push(event.latlng.lng);
@@ -213,8 +204,8 @@ function getReverseGeocode(event) {
         }
       }
       markupLayer.openPopup();
-      directionsButtonOnThePopup = document.querySelector('#directions-button');
-      directionsButtonOnThePopup.addEventListener('click', function (event) {
+      $directionsButtonOnThePopup = document.querySelector('#directions-button');
+      $directionsButtonOnThePopup.addEventListener('click', function (event) {
         getBestRoute(event, geojsonFeature);
       });
       map.setView(markupLayer.getLayers()[0]._latlng, 13);
@@ -246,26 +237,26 @@ function getBestRoute(event, geojsonFeature) {
   document.querySelector('#start').textContent = geojsonFeature.label;
 }
 
-geocodeForm.addEventListener('submit', function (event) {
+$geocodeForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getGeocode(event);
-  geocodeForm.reset();
+  $geocodeForm.reset();
 });
 
-geocodeDesktopForm.addEventListener('submit', function () {
+$geocodeDesktopForm.addEventListener('submit', function () {
   event.preventDefault();
   getGeocode(event);
-  geocodeDesktopForm.reset();
+  $geocodeDesktopForm.reset();
 });
 
-reverseGeocodeForm.addEventListener('submit', function (event) {
+$reverseGeocodeForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getReverseGeocode(event);
-  reverseGeocodeForm.reset();
+  $reverseGeocodeForm.reset();
 });
 
-reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
+$reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getReverseGeocode(event);
-  reverseGeocodeDesktopForm.reset();
+  $reverseGeocodeDesktopForm.reset();
 });
