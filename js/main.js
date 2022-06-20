@@ -243,7 +243,7 @@ function getBestRoute(event, geojsonFeature) {
       $getDirectionsForm.style.display = 'block';
     }
   }
-  document.querySelector('#start').textContent = geojsonFeature;
+  document.querySelector('#start').textContent = geojsonFeature.label;
 }
 
 geocodeForm.addEventListener('submit', function (event) {
