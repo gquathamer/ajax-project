@@ -103,20 +103,20 @@ function toggleDirectionsMenuDesktop() {
   }
 }
 
-function createPopupContent(geojsonFeature, elevation) {
+function createPopupContent() {
   var popupDiv = document.createElement('div');
   popupDiv.setAttribute('class', 'popup-div');
   var address = document.createElement('p');
-  address.textContent = 'Address: ' + geojsonFeature.properties.label;
+  address.textContent = 'Address: ' + data.address;
   popupDiv.appendChild(address);
   var latitude = document.createElement('p');
-  latitude.textContent = 'Latitude: ' + geojsonFeature.geometry.coordinates[1];
+  latitude.textContent = 'Latitude: ' + data.latitude;
   popupDiv.appendChild(latitude);
   var longitude = document.createElement('p');
-  longitude.textContent = 'Longitude: ' + geojsonFeature.geometry.coordinates[0];
+  longitude.textContent = 'Longitude: ' + data.longitude;
   popupDiv.appendChild(longitude);
   var elevationData = document.createElement('p');
-  elevationData.textContent = 'Elevation: ' + elevation.geometry.coordinates[2] + ' meters';
+  elevationData.textContent = 'Elevation: ' + data.elevation + ' meters';
   popupDiv.appendChild(elevationData);
   var buttonDiv = document.createElement('div');
   buttonDiv.setAttribute('class', 'button-div');
@@ -136,50 +136,59 @@ function createPopupContent(geojsonFeature, elevation) {
 
 function getGeocode(event) {
   var submittedAddress;
-  if (event.target.id === 'geocode-map-form') {
+  if (event.target.id === 'geocode-desktop-form') {
     submittedAddress = $geocodeDesktopForm.elements.address.value;
   } else {
     submittedAddress = $geocodeForm.elements.address.value;
   }
-  var xhr = new XMLHttpRequest();
-  xhr.open(
+  getGeocodeAJAXRequest(submittedAddress);
+}
+
+var data = {};
+
+function getGeocodeAJAXRequest(submittedAddress) {
+  var xhrGeocode = new XMLHttpRequest();
+  xhrGeocode.open(
     'GET',
     'https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&text=' + submittedAddress
   );
-  xhr.responseType = 'json';
-  xhr.addEventListener('load', () => {
-    markupLayer.clearLayers();
-    markupLayer.unbindPopup();
-    var geojsonFeature = xhr.response.features[0];
-    markupLayer.addData(geojsonFeature);
-    var xhrElevation = new XMLHttpRequest();
-    xhrElevation.open(
-      'GET',
-      'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + geojsonFeature.geometry.coordinates[0] + ',' + geojsonFeature.geometry.coordinates[1]
-    );
-    xhrElevation.responseType = 'json';
-    xhrElevation.addEventListener('load', function () {
-      var elevation = xhrElevation.response;
-      markupLayer.bindPopup(createPopupContent(geojsonFeature, elevation));
-      if (event.target.id !== 'geocode-map-form') {
-        if ($map.style.display === 'none') {
-          $map.style.display = 'block';
-          $dropdownContainer.style.display = 'none';
-        } else {
-          $map.style.display = 'none';
-          $dropdownContainer.style.display = 'block';
-        }
-      }
-      markupLayer.openPopup();
-      $directionsButtonOnThePopup = document.querySelector('#directions-button');
-      $directionsButtonOnThePopup.addEventListener('click', function (event) {
-        getBestRoute(event, geojsonFeature);
-      });
-      map.setView(markupLayer.getLayers()[0]._latlng, 13);
-    });
-    xhrElevation.send();
+  xhrGeocode.responseType = 'json';
+  xhrGeocode.addEventListener('load', () => {
+    var geocodeResponse = xhrGeocode.response;
+    data.latitude = geocodeResponse.features[0].geometry.coordinates[1];
+    data.longitude = geocodeResponse.features[0].geometry.coordinates[0];
+    data.address = geocodeResponse.features[0].properties.label;
+    data.geoJSON = geocodeResponse.features[0];
+    getElevationAJAXRequest();
   });
-  xhr.send();
+  xhrGeocode.send();
+}
+
+function getElevationAJAXRequest() {
+  var xhrElevation = new XMLHttpRequest();
+  xhrElevation.open(
+    'GET',
+    'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + data.longitude + ',' + data.latitude
+  );
+  xhrElevation.responseType = 'json';
+  xhrElevation.addEventListener('load', function () {
+    data.elevation = xhrElevation.response.geometry.coordinates[2];
+    displayPopupContent();
+  });
+  xhrElevation.send();
+}
+
+function displayPopupContent() {
+  markupLayer.clearLayers();
+  markupLayer.unbindPopup();
+  markupLayer.addData(data.geoJSON);
+  markupLayer.bindPopup(createPopupContent());
+  markupLayer.openPopup();
+  $directionsButtonOnThePopup = document.querySelector('#directions-button');
+  $directionsButtonOnThePopup.addEventListener('click', function (event) {
+    getBestRoute();
+  });
+  map.setView(markupLayer.getLayers()[0]._latlng, 13);
 }
 
 function getReverseGeocode(event) {
@@ -235,7 +244,7 @@ function getReverseGeocode(event) {
   xhr.send();
 }
 
-function getBestRoute(event, geojsonFeature) {
+function getBestRoute() {
   if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
     $getDirectionsMenuDesktop.style.display = 'flex';
     $getDirectionsFormDesktop.style.display = 'block';
@@ -254,7 +263,7 @@ function getBestRoute(event, geojsonFeature) {
       $getDirectionsForm.style.display = 'block';
     }
   }
-  document.querySelector('#start').textContent = geojsonFeature.label;
+  document.querySelector('#start').placeholder = data.address;
 }
 
 $geocodeForm.addEventListener('submit', function (event) {
