@@ -62,7 +62,7 @@ $dropdownContainerDesktop.addEventListener('click', function (event) {
   }
 });
 
-function createPopupContent(geojsonFeature) {
+function createPopupContent(geojsonFeature, elevation) {
   var popupDiv = document.createElement('div');
   popupDiv.setAttribute('class', 'popup-div');
   var address = document.createElement('p');
@@ -74,6 +74,9 @@ function createPopupContent(geojsonFeature) {
   var longitude = document.createElement('p');
   longitude.textContent = 'Longitude: ' + geojsonFeature.geometry.coordinates[0];
   popupDiv.appendChild(longitude);
+  var elevationData = document.createElement('p');
+  elevationData.textContent = 'Elevation: ' + elevation.geometry.coordinates[2] + ' meters';
+  popupDiv.appendChild(elevationData);
   var buttonDiv = document.createElement('div');
   buttonDiv.setAttribute('class', 'button-div');
   var directionsButton = document.createElement('button');
@@ -108,18 +111,28 @@ function getGeocode(event) {
     markupLayer.unbindPopup();
     var geojsonFeature = xhr.response.features[0];
     markupLayer.addData(geojsonFeature);
-    markupLayer.bindPopup(createPopupContent(geojsonFeature));
-    if (event.target.id !== 'geocode-map-form') {
-      if ($map.style.display === 'none') {
-        $map.style.display = 'block';
-        $dropdownContainer.style.display = 'none';
-      } else {
-        $map.style.display = 'none';
-        $dropdownContainer.style.display = 'block';
+    var xhrElevation = new XMLHttpRequest();
+    xhrElevation.open(
+      'GET',
+      'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + geojsonFeature.geometry.coordinates[0] + ',' + geojsonFeature.geometry.coordinates[1]
+    );
+    xhrElevation.responseType = 'json';
+    xhrElevation.addEventListener('load', function () {
+      var elevation = xhrElevation.response;
+      markupLayer.bindPopup(createPopupContent(geojsonFeature, elevation));
+      if (event.target.id !== 'geocode-map-form') {
+        if ($map.style.display === 'none') {
+          $map.style.display = 'block';
+          $dropdownContainer.style.display = 'none';
+        } else {
+          $map.style.display = 'none';
+          $dropdownContainer.style.display = 'block';
+        }
       }
-    }
-    markupLayer.openPopup();
-    map.setView(markupLayer.getLayers()[0]._latlng, 13);
+      markupLayer.openPopup();
+      map.setView(markupLayer.getLayers()[0]._latlng, 13);
+    });
+    xhrElevation.send();
   });
   xhr.send();
 }
@@ -144,18 +157,28 @@ function getReverseGeocode(event) {
     markupLayer.unbindPopup();
     var geojsonFeature = xhr.response.features[0];
     markupLayer.addData(geojsonFeature);
-    markupLayer.bindPopup(createPopupContent(geojsonFeature));
-    if (event.target.id !== 'reverse-geocode-form-desktop') {
-      if ($map.style.display === 'none') {
-        $map.style.display = 'block';
-        $dropdownContainer.style.display = 'none';
-      } else {
-        $map.style.display = 'none';
-        $dropdownContainer.style.display = 'block';
+    var xhrElevation = new XMLHttpRequest();
+    xhrElevation.open(
+      'GET',
+      'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + submittedLatLng[1] + ',' + submittedLatLng[0]
+    );
+    xhrElevation.responseType = 'json';
+    xhrElevation.addEventListener('load', function () {
+      var elevation = xhrElevation.response;
+      markupLayer.bindPopup(createPopupContent(geojsonFeature, elevation));
+      if (event.target.id !== 'reverse-geocode-form-desktop') {
+        if ($map.style.display === 'none') {
+          $map.style.display = 'block';
+          $dropdownContainer.style.display = 'none';
+        } else {
+          $map.style.display = 'none';
+          $dropdownContainer.style.display = 'block';
+        }
       }
-    }
-    markupLayer.openPopup();
-    map.setView(markupLayer.getLayers()[0]._latlng, 13);
+      markupLayer.openPopup();
+      map.setView(markupLayer.getLayers()[0]._latlng, 13);
+    });
+    xhrElevation.send();
   });
   xhr.send();
 }
