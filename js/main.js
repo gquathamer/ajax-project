@@ -24,6 +24,7 @@ var $getDirectionsMenu = document.querySelector('#directions-menu');
 var $getDirectionsForm = document.querySelector('#directions-form');
 var $getDirectionsMenuDesktop = document.querySelector('#directions-menu-desktop');
 var $getDirectionsFormDesktop = document.querySelector('#directions-form-desktop');
+var data = {};
 
 map.addEventListener('click', function (event) {
   getReverseGeocode(event);
@@ -38,8 +39,8 @@ function toggleFormContainer() {
     $map.style.display = 'none';
     $dropdownContainer.style.display = 'block';
   } else {
-    $map.style.display = 'block';
     $dropdownContainer.style.display = 'none';
+    $map.style.display = 'block';
   }
 }
 
@@ -136,6 +137,7 @@ function createPopupContent() {
 
 function getGeocode(event) {
   var submittedAddress;
+  data.eventTarget = event.target.id;
   if (event.target.id === 'geocode-desktop-form') {
     submittedAddress = $geocodeDesktopForm.elements.address.value;
   } else {
@@ -143,8 +145,6 @@ function getGeocode(event) {
   }
   getGeocodeAJAXRequest(submittedAddress);
 }
-
-var data = {};
 
 function getGeocodeAJAXRequest(submittedAddress) {
   var xhrGeocode = new XMLHttpRequest();
@@ -183,6 +183,11 @@ function displayPopupContent() {
   markupLayer.unbindPopup();
   markupLayer.addData(data.geoJSON);
   markupLayer.bindPopup(createPopupContent());
+  if (data.eventTarget === 'geocode-form') {
+    toggleFormContainer();
+  } else if (data.eventTarget === 'reverse-geocode-form') {
+    toggleFormContainer();
+  }
   markupLayer.openPopup();
   $directionsButtonOnThePopup = document.querySelector('#directions-button');
   $directionsButtonOnThePopup.addEventListener('click', function (event) {
@@ -193,6 +198,7 @@ function displayPopupContent() {
 
 function getReverseGeocode(event) {
   var submittedLatLng = [];
+  data.eventTarget = event.target.id;
   if (event.target.id === 'reverse-geocode-form-desktop') {
     submittedLatLng.push($reverseGeocodeDesktopForm.elements.latitude.value);
     submittedLatLng.push($reverseGeocodeDesktopForm.elements.longitude.value);
@@ -203,14 +209,28 @@ function getReverseGeocode(event) {
     submittedLatLng.push(event.latlng.lat);
     submittedLatLng.push(event.latlng.lng);
   }
-  var xhr = new XMLHttpRequest();
-  xhr.open(
+  getReverseGeocodeAJAXRequest(submittedLatLng);
+}
+
+function getReverseGeocodeAJAXRequest(submittedLatLng) {
+  var xhrReverseGeocode = new XMLHttpRequest();
+  xhrReverseGeocode.open(
     'GET',
     'https://api.openrouteservice.org/geocode/reverse?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&point.lat=' + submittedLatLng[0] + '&point.lon=' + submittedLatLng[1]
   );
-  xhr.responseType = 'json';
-  xhr.addEventListener('load', function () {
-    markupLayer.clearLayers();
+  xhrReverseGeocode.responseType = 'json';
+  xhrReverseGeocode.addEventListener('load', function () {
+    var reverseGeocodeResponse = xhrReverseGeocode.response;
+    data.latitude = reverseGeocodeResponse.features[0].geometry.coordinates[1];
+    data.longitude = reverseGeocodeResponse.features[0].geometry.coordinates[0];
+    data.address = reverseGeocodeResponse.features[0].properties.label;
+    data.geoJSON = reverseGeocodeResponse.features[0];
+    getElevationAJAXRequest();
+  });
+  xhrReverseGeocode.send();
+}
+
+/* markupLayer.clearLayers();
     markupLayer.unbindPopup();
     var geojsonFeature = xhr.response.features[0];
     markupLayer.addData(geojsonFeature);
@@ -242,7 +262,7 @@ function getReverseGeocode(event) {
     xhrElevation.send();
   });
   xhr.send();
-}
+} */
 
 function getBestRoute() {
   if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
