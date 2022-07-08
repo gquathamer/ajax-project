@@ -230,40 +230,6 @@ function getReverseGeocodeAJAXRequest(submittedLatLng) {
   xhrReverseGeocode.send();
 }
 
-/* markupLayer.clearLayers();
-    markupLayer.unbindPopup();
-    var geojsonFeature = xhr.response.features[0];
-    markupLayer.addData(geojsonFeature);
-    var xhrElevation = new XMLHttpRequest();
-    xhrElevation.open(
-      'GET',
-      'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + submittedLatLng[1] + ',' + submittedLatLng[0]
-    );
-    xhrElevation.responseType = 'json';
-    xhrElevation.addEventListener('load', function () {
-      var elevation = xhrElevation.response;
-      markupLayer.bindPopup(createPopupContent(geojsonFeature, elevation));
-      if (event.target.id !== 'reverse-geocode-form-desktop' && undefined) {
-        if ($map.style.display === 'none') {
-          $map.style.display = 'block';
-          $dropdownContainer.style.display = 'none';
-        } else {
-          $map.style.display = 'none';
-          $dropdownContainer.style.display = 'block';
-        }
-      }
-      markupLayer.openPopup();
-      $directionsButtonOnThePopup = document.querySelector('#directions-button');
-      $directionsButtonOnThePopup.addEventListener('click', function (event) {
-        getBestRoute(event, geojsonFeature);
-      });
-      map.setView(markupLayer.getLayers()[0]._latlng, 13);
-    });
-    xhrElevation.send();
-  });
-  xhr.send();
-} */
-
 function getBestRoute() {
   if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
     $getDirectionsMenuDesktop.style.display = 'flex';
@@ -283,7 +249,34 @@ function getBestRoute() {
       $getDirectionsForm.style.display = 'block';
     }
   }
-  document.querySelector('#start').placeholder = data.address;
+  document.querySelector('#start').value = data.address;
+}
+
+function getBestRouteAJAXRequest(event) {
+  var startCoordinates = [];
+  startCoordinates.push(data.latitude);
+  startCoordinates.push(data.longitude);
+  getGeocodeAJAXRequest($directionsForm.elements.destination.value);
+  // eslint-disable-next-line spaced-comment
+  //right here need to wait on the response from this geocode ajax call
+  var destinationCoordinates = [];
+  destinationCoordinates.push(data.latitude);
+  destinationCoordinates.push(data.longitude);
+  var xhrGetBestRoute = new XMLHttpRequest();
+  xhrGetBestRoute.open(
+    'GET',
+    'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&start=' +
+      startCoordinates[1] + ',' + startCoordinates[0] + '&end=' + destinationCoordinates[1] + ',' + destinationCoordinates[0]
+  );
+  xhrGetBestRoute.responseType = 'json';
+  xhrGetBestRoute.addEventListener('load', function () {
+    markupLayer.clearLayers();
+    markupLayer.unbindPopup();
+    // eslint-disable-next-line no-console
+    console.log(xhrGetBestRoute.response);
+    markupLayer.addData(xhrGetBestRoute.response.features[0]);
+  });
+  xhrGetBestRoute.send();
 }
 
 $geocodeForm.addEventListener('submit', function (event) {
@@ -308,4 +301,10 @@ $reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getReverseGeocode(event);
   $reverseGeocodeDesktopForm.reset();
+});
+
+$directionsForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getBestRouteAJAXRequest(event);
+  $directionsForm.reset();
 });
