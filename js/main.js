@@ -74,6 +74,12 @@ $directionsForm.addEventListener('submit', function (event) {
   $directionsForm.reset();
 });
 
+$directionsFormDesktop.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getBestRouteAJAXRequest(event);
+  $directionsForm.reset();
+});
+
 $dropdownContainerDesktop.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
     toggleReverseGeocodeMenuDesktop();
@@ -264,6 +270,7 @@ function getBestRoute() {
   if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
     $getDirectionsMenuDesktop.style.display = 'flex';
     $getDirectionsFormDesktop.style.display = 'block';
+    document.querySelector('#start-desktop').value = data.address;
   } else {
     if ($map.style.display !== 'none') {
       $map.style.display = 'none';
