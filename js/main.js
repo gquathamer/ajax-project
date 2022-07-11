@@ -34,16 +34,6 @@ $barContainer.addEventListener('click', function () {
   toggleFormContainer();
 });
 
-function toggleFormContainer() {
-  if (window.getComputedStyle($map).display === 'block') {
-    $map.style.display = 'none';
-    $dropdownContainer.style.display = 'block';
-  } else {
-    $dropdownContainer.style.display = 'none';
-    $map.style.display = 'block';
-  }
-}
-
 $dropdownContainer.addEventListener('click', function (event) {
   if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'geocode-menu') {
     toggleGeocodeMenu();
@@ -53,6 +43,54 @@ $dropdownContainer.addEventListener('click', function (event) {
     toggleDirectionsMenu();
   }
 });
+
+$geocodeForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getGeocode(event);
+  $geocodeForm.reset();
+});
+
+$geocodeDesktopForm.addEventListener('submit', function () {
+  event.preventDefault();
+  getGeocode(event);
+  $geocodeDesktopForm.reset();
+});
+
+$reverseGeocodeForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getReverseGeocode(event);
+  $reverseGeocodeForm.reset();
+});
+
+$reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getReverseGeocode(event);
+  $reverseGeocodeDesktopForm.reset();
+});
+
+$directionsForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  getBestRouteAJAXRequest(event);
+  $directionsForm.reset();
+});
+
+$dropdownContainerDesktop.addEventListener('click', function (event) {
+  if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
+    toggleReverseGeocodeMenuDesktop();
+  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
+    toggleDirectionsMenuDesktop();
+  }
+});
+
+function toggleFormContainer() {
+  if (window.getComputedStyle($map).display === 'block') {
+    $map.style.display = 'none';
+    $dropdownContainer.style.display = 'block';
+  } else {
+    $dropdownContainer.style.display = 'none';
+    $map.style.display = 'block';
+  }
+}
 
 function toggleGeocodeMenu() {
   if (window.getComputedStyle($geocodeForm).display === 'block') {
@@ -79,14 +117,6 @@ function toggleDirectionsMenu() {
     $getDirectionsForm.style.display = 'block';
   }
 }
-
-$dropdownContainerDesktop.addEventListener('click', function (event) {
-  if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
-    toggleReverseGeocodeMenuDesktop();
-  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
-    toggleDirectionsMenuDesktop();
-  }
-});
 
 function toggleReverseGeocodeMenuDesktop() {
   if (window.getComputedStyle($reverseGeocodeDesktopForm).display === 'block') {
@@ -278,33 +308,3 @@ function getBestRouteAJAXRequest(event) {
   });
   xhrGetBestRoute.send();
 }
-
-$geocodeForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  getGeocode(event);
-  $geocodeForm.reset();
-});
-
-$geocodeDesktopForm.addEventListener('submit', function () {
-  event.preventDefault();
-  getGeocode(event);
-  $geocodeDesktopForm.reset();
-});
-
-$reverseGeocodeForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  getReverseGeocode(event);
-  $reverseGeocodeForm.reset();
-});
-
-$reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  getReverseGeocode(event);
-  $reverseGeocodeDesktopForm.reset();
-});
-
-$directionsForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  getBestRouteAJAXRequest(event);
-  $directionsForm.reset();
-});
