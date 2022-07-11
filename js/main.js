@@ -12,19 +12,16 @@ var $map = document.querySelector('#map');
 var $dropdownContainer = document.querySelector('.dropdown-container');
 var $dropdownContainerDesktop = document.querySelector('.dropdown-container-desktop');
 var $reverseGeocodeDesktopForm = document.forms[0];
-// eslint-disable-next-line no-unused-vars
-var $directionsFormDesktop = document.forms[1];
+var $directionsDesktopForm = document.forms[1];
 var $geocodeDesktopForm = document.forms[2];
 var $geocodeForm = document.forms[3];
 var $reverseGeocodeForm = document.forms[4];
-// eslint-disable-next-line no-unused-vars
 var $directionsForm = document.forms[5];
 var $directionsButtonOnThePopup;
 var $getDirectionsMenu = document.querySelector('#directions-menu');
 var $getDirectionsForm = document.querySelector('#directions-form');
 var $getDirectionsMenuDesktop = document.querySelector('#directions-menu-desktop');
 var $getDirectionsFormDesktop = document.querySelector('#directions-form-desktop');
-var data = {};
 
 map.addEventListener('click', function (event) {
   getReverseGeocode(event);
@@ -41,6 +38,14 @@ $dropdownContainer.addEventListener('click', function (event) {
     toggleReverseGeocodeMenu();
   } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu') {
     toggleDirectionsMenu();
+  }
+});
+
+$dropdownContainerDesktop.addEventListener('click', function (event) {
+  if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
+    toggleReverseGeocodeMenuDesktop();
+  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
+    toggleDirectionsMenuDesktop();
   }
 });
 
@@ -70,22 +75,14 @@ $reverseGeocodeDesktopForm.addEventListener('submit', function (event) {
 
 $directionsForm.addEventListener('submit', function (event) {
   event.preventDefault();
-  getBestRouteAJAXRequest(event);
+  getBestRouteDestinationAJAXRequest(event);
   $directionsForm.reset();
 });
 
-$directionsFormDesktop.addEventListener('submit', function (event) {
+$directionsDesktopForm.addEventListener('submit', function (event) {
   event.preventDefault();
-  getBestRouteAJAXRequest(event);
+  getBestRouteDestinationAJAXRequest(event);
   $directionsForm.reset();
-});
-
-$dropdownContainerDesktop.addEventListener('click', function (event) {
-  if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'reverse-geocode-menu-desktop') {
-    toggleReverseGeocodeMenuDesktop();
-  } else if (event.target.tagName === 'I' && event.target.closest('DIV').id === 'directions-menu-desktop') {
-    toggleDirectionsMenuDesktop();
-  }
 });
 
 function toggleFormContainer() {
@@ -116,19 +113,19 @@ function toggleReverseGeocodeMenu() {
   }
 }
 
-function toggleDirectionsMenu() {
-  if (window.getComputedStyle($getDirectionsForm).display === 'block') {
-    $getDirectionsForm.style.display = 'none';
-  } else {
-    $getDirectionsForm.style.display = 'block';
-  }
-}
-
 function toggleReverseGeocodeMenuDesktop() {
   if (window.getComputedStyle($reverseGeocodeDesktopForm).display === 'block') {
     $reverseGeocodeDesktopForm.style.display = 'none';
   } else {
     $reverseGeocodeDesktopForm.style.display = 'block';
+  }
+}
+
+function toggleDirectionsMenu() {
+  if (window.getComputedStyle($getDirectionsForm).display === 'block') {
+    $getDirectionsForm.style.display = 'none';
+  } else {
+    $getDirectionsForm.style.display = 'block';
   }
 }
 
@@ -182,7 +179,7 @@ function getGeocode(event) {
   getGeocodeAJAXRequest(submittedAddress);
 }
 
-function getGeocodeAJAXRequest(submittedAddress) {
+function getGeocodeAJAXRequest(submittedAddress, startCoordinates) {
   var xhrGeocode = new XMLHttpRequest();
   xhrGeocode.open(
     'GET',
@@ -195,6 +192,10 @@ function getGeocodeAJAXRequest(submittedAddress) {
     data.longitude = geocodeResponse.features[0].geometry.coordinates[0];
     data.address = geocodeResponse.features[0].properties.label;
     data.geoJSON = geocodeResponse.features[0];
+    if (data.eventTarget === 'directions-form' || data.eventTarget === 'directions-form-desktop') {
+      getBestRouteGeoJson(startCoordinates);
+      return;
+    }
     getElevationAJAXRequest();
   });
   xhrGeocode.send();
@@ -289,13 +290,19 @@ function getBestRoute() {
   document.querySelector('#start').value = data.address;
 }
 
-function getBestRouteAJAXRequest(event) {
+function getBestRouteDestinationAJAXRequest(event) {
+  data.eventTarget = event.target.id;
   var startCoordinates = [];
   startCoordinates.push(data.latitude);
   startCoordinates.push(data.longitude);
-  getGeocodeAJAXRequest($directionsForm.elements.destination.value);
-  // eslint-disable-next-line spaced-comment
-  //right here need to wait on the response from this geocode ajax call
+  if (data.eventTarget === 'directions-form') {
+    getGeocodeAJAXRequest($directionsForm.elements.destination.value, startCoordinates);
+  } else {
+    getGeocodeAJAXRequest($getDirectionsFormDesktop.elements.destination.value, startCoordinates);
+  }
+}
+
+function getBestRouteGeoJson(startCoordinates) {
   var destinationCoordinates = [];
   destinationCoordinates.push(data.latitude);
   destinationCoordinates.push(data.longitude);
@@ -303,14 +310,13 @@ function getBestRouteAJAXRequest(event) {
   xhrGetBestRoute.open(
     'GET',
     'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&start=' +
-      startCoordinates[1] + ',' + startCoordinates[0] + '&end=' + destinationCoordinates[1] + ',' + destinationCoordinates[0]
+    startCoordinates[1] + ',' + startCoordinates[0] + '&end=' + destinationCoordinates[1] + ',' + destinationCoordinates[0]
   );
   xhrGetBestRoute.responseType = 'json';
   xhrGetBestRoute.addEventListener('load', function () {
+    markupLayer.closePopup();
     markupLayer.clearLayers();
     markupLayer.unbindPopup();
-    // eslint-disable-next-line no-console
-    console.log(xhrGetBestRoute.response);
     markupLayer.addData(xhrGetBestRoute.response.features[0]);
   });
   xhrGetBestRoute.send();
