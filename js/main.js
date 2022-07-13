@@ -77,12 +77,16 @@ $directionsForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getBestRouteDestinationAJAXRequest(event);
   $directionsForm.reset();
+  $getDirectionsMenu.style.display = 'none';
+  $getDirectionsForm.style.display = 'none';
 });
 
 $directionsDesktopForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getBestRouteDestinationAJAXRequest(event);
   $directionsForm.reset();
+  $getDirectionsMenuDesktop.style.display = 'none';
+  $getDirectionsFormDesktop.style.display = 'none';
 });
 
 function toggleFormContainer() {
@@ -273,17 +277,17 @@ function getBestRoute() {
     $getDirectionsFormDesktop.style.display = 'block';
     document.querySelector('#start-desktop').value = data.address;
   } else {
-    if ($map.style.display !== 'none') {
+    if (window.getComputedStyle($map).display === 'block') {
       $map.style.display = 'none';
       $dropdownContainer.style.display = 'block';
     } else {
       $map.style.display = 'block';
       $dropdownContainer.style.display = 'none';
     }
-    if ($getDirectionsMenu.style.display !== 'flex') {
+    if (window.getComputedStyle($getDirectionsMenu).display !== 'flex') {
       $getDirectionsMenu.style.display = 'flex';
     }
-    if ($getDirectionsForm.style.display !== 'flex') {
+    if (window.getComputedStyle($getDirectionsForm).display !== 'flex') {
       $getDirectionsForm.style.display = 'block';
     }
   }
@@ -320,4 +324,8 @@ function getBestRouteGeoJson(startCoordinates) {
     markupLayer.addData(xhrGetBestRoute.response.features[0]);
   });
   xhrGetBestRoute.send();
+  if (data.eventTarget === 'directions-form') {
+    toggleFormContainer();
+  }
+  map.setView([data.latitude, data.longitude], 13);
 }
