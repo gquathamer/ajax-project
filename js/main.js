@@ -322,6 +322,33 @@ function getBestRouteGeoJson(startCoordinates) {
     markupLayer.clearLayers();
     markupLayer.unbindPopup();
     markupLayer.addData(xhrGetBestRoute.response.features[0]);
+    var routeCoordinates = xhrGetBestRoute.response.features[0].geometry.coordinates;
+    markupLayer.addData({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: routeCoordinates[0]
+          }
+        }
+      ]
+    });
+    markupLayer.addData({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: routeCoordinates[routeCoordinates.length - 1]
+          }
+        }
+      ]
+    });
   });
   xhrGetBestRoute.send();
   if (data.eventTarget === 'directions-form') {
