@@ -84,7 +84,7 @@ $directionsForm.addEventListener('submit', function (event) {
 $directionsDesktopForm.addEventListener('submit', function (event) {
   event.preventDefault();
   getBestRouteDestinationAJAXRequest(event);
-  $directionsForm.reset();
+  $directionsDesktopForm.reset();
   $getDirectionsMenuDesktop.style.display = 'none';
   $getDirectionsFormDesktop.style.display = 'none';
 });
@@ -172,53 +172,6 @@ function createPopupContent() {
   return popupDiv;
 }
 
-function getGeocode(event) {
-  var submittedAddress;
-  data.eventTarget = event.target.id;
-  if (event.target.id === 'geocode-desktop-form') {
-    submittedAddress = $geocodeDesktopForm.elements.address.value;
-  } else {
-    submittedAddress = $geocodeForm.elements.address.value;
-  }
-  getGeocodeAJAXRequest(submittedAddress);
-}
-
-function getGeocodeAJAXRequest(submittedAddress, startCoordinates) {
-  var xhrGeocode = new XMLHttpRequest();
-  xhrGeocode.open(
-    'GET',
-    'https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&text=' + submittedAddress
-  );
-  xhrGeocode.responseType = 'json';
-  xhrGeocode.addEventListener('load', () => {
-    var geocodeResponse = xhrGeocode.response;
-    data.latitude = geocodeResponse.features[0].geometry.coordinates[1];
-    data.longitude = geocodeResponse.features[0].geometry.coordinates[0];
-    data.address = geocodeResponse.features[0].properties.label;
-    data.geoJSON = geocodeResponse.features[0];
-    if (data.eventTarget === 'directions-form' || data.eventTarget === 'directions-form-desktop') {
-      getBestRouteGeoJson(startCoordinates);
-      return;
-    }
-    getElevationAJAXRequest();
-  });
-  xhrGeocode.send();
-}
-
-function getElevationAJAXRequest() {
-  var xhrElevation = new XMLHttpRequest();
-  xhrElevation.open(
-    'GET',
-    'https://api.openrouteservice.org/elevation/point?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&geometry=' + data.longitude + ',' + data.latitude
-  );
-  xhrElevation.responseType = 'json';
-  xhrElevation.addEventListener('load', function () {
-    data.elevation = xhrElevation.response.geometry.coordinates[2];
-    displayPopupContent();
-  });
-  xhrElevation.send();
-}
-
 function displayPopupContent() {
   markupLayer.clearLayers();
   markupLayer.unbindPopup();
@@ -232,9 +185,46 @@ function displayPopupContent() {
   markupLayer.openPopup();
   $directionsButtonOnThePopup = document.querySelector('#directions-button');
   $directionsButtonOnThePopup.addEventListener('click', function (event) {
-    getBestRoute();
+    displayBestRouteForm();
   });
   map.setView(markupLayer.getLayers()[0]._latlng, 13);
+}
+
+function getOpenRoutesJSON(url, params, callback) {
+  var xhr = new XMLHttpRequest();
+  var searchParams = new URLSearchParams(params);
+  searchParams.set('api_key', '5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da');
+  var ajaxURL = new URL('https://api.openrouteservice.org' + url + '?' + searchParams.toString());
+  xhr.open('GET', ajaxURL.toString());
+  xhr.responseType = 'json';
+  xhr.addEventListener('load', function () {
+    callback(xhr.response);
+  });
+  xhr.send();
+}
+
+function getGeocode(event, startCoordinates) {
+  var submittedAddress;
+  data.eventTarget = event.target.id;
+  if (event.target.id === 'geocode-desktop-form') {
+    submittedAddress = $geocodeDesktopForm.elements.address.value;
+  } else {
+    submittedAddress = $geocodeForm.elements.address.value;
+  }
+  getOpenRoutesJSON('/geocode/search', { text: submittedAddress }, function (response, startCoordinates) {
+    data.latitude = response.features[0].geometry.coordinates[1];
+    data.longitude = response.features[0].geometry.coordinates[0];
+    data.address = response.features[0].properties.label;
+    data.geoJSON = response.features[0];
+    getElevationAJAXRequest();
+  });
+}
+
+function getElevationAJAXRequest() {
+  getOpenRoutesJSON('/elevation/point', { geometry: data.longitude + ',' + data.latitude }, function (response) {
+    data.elevation = response.geometry.coordinates[2];
+    displayPopupContent();
+  });
 }
 
 function getReverseGeocode(event) {
@@ -250,28 +240,16 @@ function getReverseGeocode(event) {
     submittedLatLng.push(event.latlng.lat);
     submittedLatLng.push(event.latlng.lng);
   }
-  getReverseGeocodeAJAXRequest(submittedLatLng);
-}
-
-function getReverseGeocodeAJAXRequest(submittedLatLng) {
-  var xhrReverseGeocode = new XMLHttpRequest();
-  xhrReverseGeocode.open(
-    'GET',
-    'https://api.openrouteservice.org/geocode/reverse?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&point.lat=' + submittedLatLng[0] + '&point.lon=' + submittedLatLng[1]
-  );
-  xhrReverseGeocode.responseType = 'json';
-  xhrReverseGeocode.addEventListener('load', function () {
-    var reverseGeocodeResponse = xhrReverseGeocode.response;
-    data.latitude = reverseGeocodeResponse.features[0].geometry.coordinates[1];
-    data.longitude = reverseGeocodeResponse.features[0].geometry.coordinates[0];
-    data.address = reverseGeocodeResponse.features[0].properties.label;
-    data.geoJSON = reverseGeocodeResponse.features[0];
+  getOpenRoutesJSON('/geocode/reverse', { 'point.lat': submittedLatLng[0], 'point.lon': submittedLatLng[1] }, function (response) {
+    data.latitude = response.features[0].geometry.coordinates[1];
+    data.longitude = response.features[0].geometry.coordinates[0];
+    data.address = response.features[0].properties.label;
+    data.geoJSON = response.features[0];
     getElevationAJAXRequest();
   });
-  xhrReverseGeocode.send();
 }
 
-function getBestRoute() {
+function displayBestRouteForm() {
   if (window.getComputedStyle($dropdownContainerDesktop).display === 'block') {
     $getDirectionsMenuDesktop.style.display = 'flex';
     $getDirectionsFormDesktop.style.display = 'block';
@@ -295,64 +273,33 @@ function getBestRoute() {
 }
 
 function getBestRouteDestinationAJAXRequest(event) {
-  data.eventTarget = event.target.id;
+  if (data.eventTarget === 'directions-form') {
+    data.address = $directionsForm.elements.destination.value;
+  } else {
+    data.address = $directionsDesktopForm.elements.destination.value;
+  }
   var startCoordinates = [];
   startCoordinates.push(data.latitude);
   startCoordinates.push(data.longitude);
-  if (data.eventTarget === 'directions-form') {
-    getGeocodeAJAXRequest($directionsForm.elements.destination.value, startCoordinates);
-  } else {
-    getGeocodeAJAXRequest($getDirectionsFormDesktop.elements.destination.value, startCoordinates);
-  }
-}
-
-function getBestRouteGeoJson(startCoordinates) {
-  var destinationCoordinates = [];
-  destinationCoordinates.push(data.latitude);
-  destinationCoordinates.push(data.longitude);
-  var xhrGetBestRoute = new XMLHttpRequest();
-  xhrGetBestRoute.open(
-    'GET',
-    'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62489e44bfb8d57d4a17b815aa9f855e19da&start=' +
-    startCoordinates[1] + ',' + startCoordinates[0] + '&end=' + destinationCoordinates[1] + ',' + destinationCoordinates[0]
-  );
-  xhrGetBestRoute.responseType = 'json';
-  xhrGetBestRoute.addEventListener('load', function () {
-    markupLayer.closePopup();
-    markupLayer.clearLayers();
-    markupLayer.unbindPopup();
-    markupLayer.addData(xhrGetBestRoute.response.features[0]);
-    var routeCoordinates = xhrGetBestRoute.response.features[0].geometry.coordinates;
-    markupLayer.addData({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: routeCoordinates[0]
-          }
-        }
-      ]
+  getOpenRoutesJSON('/geocode/search', { text: data.address }, function (response) {
+    var routeParameters = {
+      start: startCoordinates[1] + ',' + startCoordinates[0],
+      end: response.features[0].geometry.coordinates[0] + ',' + response.features[0].geometry.coordinates[1]
+    };
+    getOpenRoutesJSON('/v2/directions/driving-car', routeParameters, function (response) {
+      markupLayer.closePopup();
+      markupLayer.clearLayers();
+      markupLayer.unbindPopup();
+      markupLayer.addData(response.features[0]);
+      map.fitBounds(markupLayer.getBounds());
+      var routeCoordinates = response.features[0].geometry.coordinates;
+      // eslint-disable-next-line no-undef
+      markupLayer.addData(L.marker([routeCoordinates[0][1], routeCoordinates[0][0]]).toGeoJSON());
+      // eslint-disable-next-line no-undef
+      markupLayer.addData(L.marker([routeCoordinates[routeCoordinates.length - 1][1], routeCoordinates[routeCoordinates.length - 1][0]]).toGeoJSON());
     });
-    markupLayer.addData({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: routeCoordinates[routeCoordinates.length - 1]
-          }
-        }
-      ]
-    });
+    if (data.eventTarget === 'directions-form') {
+      toggleFormContainer();
+    }
   });
-  xhrGetBestRoute.send();
-  if (data.eventTarget === 'directions-form') {
-    toggleFormContainer();
-  }
-  map.setView([data.latitude, data.longitude], 13);
 }
